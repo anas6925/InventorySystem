@@ -120,7 +120,7 @@ const navItems = [
     icon: <Groups2Outlined />,
   },
   {
-    text: "Vendor Management",
+    text: "Vendor-Management",
     icon:  <Groups2Outlined />,
   },
   {

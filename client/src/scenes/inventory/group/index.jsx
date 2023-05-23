@@ -59,34 +59,7 @@ const InventoryGroup = () => {
     }
   ];
 
-  const [createVendor,setCreateVendor] = useState();
-
-  const handleCreateVendor = async () => {
-    try {
-      const vendorData = {
-        name: 'Example Vendor',
-        email: 'vendor@example.com',
-        phone: '1234567890',
-        address: '123 Main Street',
-        city: 'Example City',
-        state: 'Example State',
-        country: 'Example Country',
-        postalCode: '12345',
-        website: 'https://example.com'
-      };
-
-      const response = await createVendor(vendorData);
-
-      if (response.error) {
-        throw new Error('Error creating vendor');
-      }
-
-      const createdVendor = response.data;
-      console.log('Vendor created:', createdVendor);
-    } catch (error) {
-      console.error('Error:', error.message);
-    }
-  };
+ 
 
   return (
     <Box m='1.5rem 2.5rem'>
@@ -242,14 +215,7 @@ const InventoryGroup = () => {
               justifyContent='center'
               xs={12}
             >
-              <Button
-                variant='contained'
-                color='primary'
-                onClick={handleCreateVendor}
-                // disabled={isCreatingVendor}
-              >
-                Save
-              </Button>
+             
             </Grid>
           </Grid>
         </Box>
