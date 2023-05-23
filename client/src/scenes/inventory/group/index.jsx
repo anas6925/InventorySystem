@@ -1,27 +1,26 @@
-import React, { useState } from 'react'
-import FlexBetween from 'components/FlexBetween'
-import Header from 'components/Header'
-import Grid from '@mui/material/Grid'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
-import { Add, Edit, Delete } from '@mui/icons-material'
-import { Box, Button, TextField, useTheme, useMediaQuery } from '@mui/material'
-import { DataGrid } from '@mui/x-data-grid'
-import { useGetDashboardQuery } from 'state/api'
+import React, { useState } from 'react';
+import FlexBetween from 'components/FlexBetween';
+import Header from 'components/Header';
+import Grid from '@mui/material/Grid';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import { Add, Edit, Delete } from '@mui/icons-material';
+import { Box, Button, TextField, useTheme, useMediaQuery } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import { useGetDashboardQuery } from 'state/api';
 
 const InventoryGroup = () => {
-  const [active, setActive] = useState('addGroup')
-  const theme = useTheme()
-  const isNonMediumScreens = useMediaQuery('(min-width: 1200px)')
-  const { data, isLoading } = useGetDashboardQuery()
-
-  const [status, setStatus] = useState('')
+  const [active, setActive] = useState('addGroup');
+  const theme = useTheme();
+  const isNonMediumScreens = useMediaQuery('(min-width: 1200px)');
+  const { data, isLoading } = useGetDashboardQuery();
+  const [status, setStatus] = useState('');
 
   const handleChange = event => {
-    setStatus(event.target.value)
-  }
+    setStatus(event.target.value);
+  };
 
   const columns = [
     {
@@ -58,7 +57,36 @@ const InventoryGroup = () => {
       flex: 1,
       renderCell: params => `$${Number(params.value).toFixed(2)}`
     }
-  ]
+  ];
+
+  const [createVendor,setCreateVendor] = useState();
+
+  const handleCreateVendor = async () => {
+    try {
+      const vendorData = {
+        name: 'Example Vendor',
+        email: 'vendor@example.com',
+        phone: '1234567890',
+        address: '123 Main Street',
+        city: 'Example City',
+        state: 'Example State',
+        country: 'Example Country',
+        postalCode: '12345',
+        website: 'https://example.com'
+      };
+
+      const response = await createVendor(vendorData);
+
+      if (response.error) {
+        throw new Error('Error creating vendor');
+      }
+
+      const createdVendor = response.data;
+      console.log('Vendor created:', createdVendor);
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  };
 
   return (
     <Box m='1.5rem 2.5rem'>
@@ -214,7 +242,12 @@ const InventoryGroup = () => {
               justifyContent='center'
               xs={12}
             >
-              <Button variant='contained' color='primary'>
+              <Button
+                variant='contained'
+                color='primary'
+                onClick={handleCreateVendor}
+                // disabled={isCreatingVendor}
+              >
                 Save
               </Button>
             </Grid>

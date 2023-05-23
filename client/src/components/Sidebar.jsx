@@ -18,12 +18,12 @@ import {
   Groups2Outlined,
   ReceiptLongOutlined,
   PublicOutlined,
-  PointOfSaleOutlined,
-  TodayOutlined,
-  CalendarMonthOutlined,
+  // // PointOfSaleOutlined,
+  // TodayOutlined,
+  // CalendarMonthOutlined,
   AdminPanelSettingsOutlined,
   TrendingUpOutlined,
-  PieChartOutlined,
+  // PieChartOutlined,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -110,6 +110,7 @@ const navItems = [
   // Sidebar Item 2 End
 
   // Sidebar Item 3
+ 
   {
     text: "Inventory",
     icon: null,
@@ -117,6 +118,10 @@ const navItems = [
   {
     text: "Group",
     icon: <Groups2Outlined />,
+  },
+  {
+    text: "Vendor Management",
+    icon:  <Groups2Outlined />,
   },
   {
     text: "Items",

@@ -22,6 +22,7 @@ import InventoryGroup from "scenes/inventory/group";
 import InventoryItem from "scenes/inventory/items";
 import InventoryBrand from "scenes/inventory/brand";
 import InventoryRawItem from "scenes/inventory/raw-item";
+import InventoryVendorManagement from "scenes/inventory/vendor-management";
 
 // Settings Imports
 import SettingsPurchasesAmountLimiter from "scenes/settings/purchases-amount-limiter";
@@ -57,7 +58,7 @@ function App() {
               <Route path="/items" element={<InventoryItem />} />
               <Route path="/brand" element={<InventoryBrand />} />
               <Route path="/raw-item" element={<InventoryRawItem />} />
-
+              <Route path="/vendor-management" element={<InventoryVendorManagement />} />
               {/* Settings Routes */}
               <Route path="/purchase-amount-limiter" element={<SettingsPurchasesAmountLimiter />} />
               <Route path="/discount-keys" element={<SettingsDiscountKeys />} />
