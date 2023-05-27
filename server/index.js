@@ -10,6 +10,10 @@ import generalRoutes from "./routes/general.js";
 import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
 import vendorRoutes from "./routes/vendor.js";
+import groupRoutes from "./routes/group.js";
+import itemsRoutes from "./routes/item.js";
+import brandsRoutes from "./routes/brand.js";
+import rawItemsRoutes from "./routes/RawItem.js";
 
 
 /* CONFIGURATION */
@@ -29,6 +33,10 @@ app.use("/api/general", generalRoutes);
 app.use("/api/management", managementRoutes);
 app.use("/api/sales", salesRoutes);
 app.use("/api/vendors", vendorRoutes);
+app.use("/api/groups", groupRoutes);
+app.use("/api/items", itemsRoutes);
+app.use("/api/brands", brandsRoutes);
+app.use("/api/rawitems", rawItemsRoutes);
 
 
 /* MONGOOSE SETUP */

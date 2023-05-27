@@ -1,41 +1,25 @@
 import mongoose from "mongoose";
 
-const VendorSchema = new mongoose.Schema({
+const RawItemSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  phone: {
+  selectGroup: {
     type: String,
     required: true,
   },
-  address: {
+  status: {
     type: String,
     required: true,
   },
-  city: {
+  selectBrand: {
     type: String,
     required: true,
   },
-  state: {
+  selectUnitOfMeasure: {
     type: String,
     required: true,
-  },
-  country: {
-    type: String,
-    required: true,
-  },
-  postalCode: {
-    type: String,
-    required: true,
-  },
-  website: {
-    type: String,
   },
   isActive: {
     type: Boolean,
@@ -51,7 +35,5 @@ const VendorSchema = new mongoose.Schema({
   },
 });
 
-
-
-const Vendor = mongoose.model("Vendor", VendorSchema);
-export default Vendor;
+const RawItem = mongoose.model("RawItem", RawItemSchema);
+export default RawItem;

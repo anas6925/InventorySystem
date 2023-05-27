@@ -1,414 +1,376 @@
-import React, { useState } from 'react'
-import FlexBetween from 'components/FlexBetween'
-import Header from 'components/Header'
-import Grid from '@mui/material/Grid'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
-import { Add, Edit, Delete } from '@mui/icons-material'
-import { Box, Button, TextField, useTheme, useMediaQuery } from '@mui/material'
-import { DataGrid } from '@mui/x-data-grid'
-import { useGetDashboardQuery } from 'state/api'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-const InventoryItem = () => {
-  const [active, setActive] = useState('addItem')
-  const theme = useTheme()
-  const isNonMediumScreens = useMediaQuery('(min-width: 1200px)')
-  const { data, isLoading } = useGetDashboardQuery()
-  const [status, setStatus] = useState('')
-  const [group, selectGroup] = useState('')
+const InventoryItemManagement = () => {
+  const [items, setItems] = useState([]);
+  const [editItemId, setEditItemId] = useState(null);
+  const [editItemData, setEditItemData] = useState({
+    name: '',
+    selectGroup: '',
+    status: '',
+    fontSize: 0,
+    fontColor: '',
+    itemColor: '',
+    price: 0,
+    priceWithGST: 0,
+    priceWithoutGST: 0,
+    isActive: true,
+  });
+  const [newItemData, setNewItemData] = useState({
+    name: '',
+    selectGroup: '',
+    status: '',
+    fontSize: 0,
+    fontColor: '',
+    itemColor: '',
+    price: 0,
+    priceWithGST: 0,
+    priceWithoutGST: 0,
+    isActive: true,
+  });
 
-  const handleChange = event => {
-    setStatus(event.target.value)
-  }
+  useEffect(() => {
+    fetchItems();
+  }, []);
 
-  const handleChangeGroup = event => {
-    selectGroup(event.target.value)
-  }
-
-  const columns = [
-    {
-      field: 'item_id',
-      headerName: 'Item ID',
-      flex: 1
-    },
-    {
-      field: 'group_name',
-      headerName: 'Group Name',
-      flex: 1
-    },
-    {
-      field: 'item_color',
-      headerName: 'Item Color',
-      flex: 1
-    },
-    {
-      field: 'font_color',
-      headerName: 'Font Color',
-      flex: 1
-    },
-    {
-      field: 'font_size',
-      headerName: 'Font Size',
-      flex: 1
-    },
-    {
-      field: 'price_withgst',
-      headerName: 'Price (With GST)',
-      flex: 1
-    },
-    {
-      field: 'price_withoutgst',
-      headerName: 'Price (Without GST)',
-      flex: 1
-    },
-    {
-      field: 'item_status',
-      headerName: 'Item Status',
-      flex: 1,
+  const fetchItems = async () => {
+    try {
+      const response = await axios.get('http://localhost:5001/api/items');
+      if (response.status === 200) {
+        setItems(response.data);
+      } else {
+        throw new Error('Error fetching items');
+      }
+    } catch (error) {
+      console.error('Error fetching items:', error);
     }
-  ]
+  };
+
+  const handleEditItem = (itemId) => {
+    // Find the item data to edit
+    const itemToEdit = items.find((item) => item._id === itemId);
+    if (itemToEdit) {
+      setEditItemId(itemId);
+      setEditItemData(itemToEdit);
+    }
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditItemData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleEditItemSave = async () => {
+    try {
+      const editedItemData = {
+        ...editItemData,
+        isActive: editItemData.isActive === 'active', // Convert to boolean
+      };
+  
+      await axios.put(
+        `http://localhost:5001/api/items/${editItemId}`,
+        editedItemData
+      );
+  
+      fetchItems();
+     
+    } catch (error) {
+      console.error('Error updating item:', error);
+    }
+  };
+
+  const closeEditDialog = () => {
+    setEditItemId(null);
+    setEditItemData({
+      name: '',
+      selectGroup: '',
+      status: '',
+      fontSize: 0,
+      fontColor: '',
+      itemColor: '',
+      price: 0,
+      priceWithGST: 0,
+      priceWithoutGST: 0,
+      isActive: true,
+    });
+  };
+
+  
+
+  const handleNewItemSave = async () => {
+    try {
+      const newItemDataWithBoolean = {
+        ...newItemData,
+        isActive: newItemData.isActive === 'active', // Convert to boolean
+      };
+  
+      await axios.post('http://localhost:5001/api/items', newItemDataWithBoolean);
+  
+      setNewItemData({
+        name: '',
+        selectGroup: '',
+        status: '',
+        fontSize: '',
+        fontColor: '',
+        itemColor: '',
+        price: '',
+        priceWithGST: '',
+        priceWithoutGST: '',
+        isActive: '',
+      });
+  
+      fetchItems();
+    } catch (error) {
+      console.error('Error creating item:', error);
+    }
+  };
+
+  const closeNewItemDialog = () => {
+    setNewItemData({
+      name: '',
+      selectGroup: '',
+      status: '',
+      fontSize: 0,
+      fontColor: '',
+      itemColor: '',
+      price: 0,
+      priceWithGST: 0,
+      priceWithoutGST: 0,
+      isActive: true,
+    });
+  };
+
+  const handleDeleteItem = async (itemId) => {
+    try {
+      const response = await axios.delete(`http://localhost:5001/api/items/${itemId}`);
+      if (response.status === 200) {
+        // Remove the deleted item from the state
+        setItems((prevItems) => prevItems.filter((item) => item._id !== itemId));
+        console.log(`Successfully deleted item with ID: ${itemId}`);
+      } else {
+        throw new Error('Error deleting item');
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+  const handleNewItemInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    setNewItemData((prevData) => ({
+      ...prevData,
+      [name]: newValue,
+    }));
+  };
+  
+  const columns = [
+    { field: 'name', headerName: 'Name', width: 200 },
+    { field: 'selectGroup', headerName: 'Select Group', width: 200 },
+    { field: 'status', headerName: 'Status', width: 150 },
+    { field: 'fontSize', headerName: 'Font Size', width: 150 },
+    { field: 'fontColor', headerName: 'Font Color', width: 200 },
+    { field: 'itemColor', headerName: 'Item Color', width: 200 },
+    { field: 'price', headerName: 'Price', width: 150 },
+    { field: 'priceWithGST', headerName: 'Price with GST', width: 200 },
+    { field: 'priceWithoutGST', headerName: 'Price without GST', width: 200 },
+    { field: 'isActive', headerName: 'Active', width: 150 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      sortable: false,
+      renderCell: (params) => (
+        <>
+          <button onClick={() => handleEditItem(params.row._id)}>Edit</button>
+          <button onClick={() => handleDeleteItem(params.row._id)}>Delete</button>
+        </>
+      ),
+    },
+  ];
 
   return (
-    <Box m='1.5rem 2.5rem'>
-      <FlexBetween>
-        {active === 'addItem' && <Header title='ADD ITEM' />}
+    <div>
+      <h2>Item Management</h2>
 
-        {active === 'editItem' && <Header title='EDIT ITEM' />}
-
-        {active === 'deleteItem' && <Header title='DELETE ITEM' />}
-
-        <Box>
-          <Button
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px',
-              margin: '3px'
-            }}
-            onClick={() => setActive('addItem')}
-          >
-            <Add sx={{ mr: '10px' }} />
-            Add Item
-          </Button>
-
-          <Button
-            onClick={() => setActive('editItem')}
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px'
-            }}
-          >
-            <Edit sx={{ mr: '10px' }} />
-            Edit Item
-          </Button>
-
-          <Button
-            onClick={() => setActive('deleteItem')}
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px',
-              margin: '3px'
-            }}
-          >
-            <Delete sx={{ mr: '10px' }} />
-            Delete Item
-          </Button>
-        </Box>
-      </FlexBetween>
-
-      {/* Add Item  */}
-      {active === 'addItem' && (
-        <Box my='20px' sx={{ width: '100%' }}>
-          <Grid
-            container
-            rowSpacing={1}
-            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-          >
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <TextField
-                type='text'
-                label='Name'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-label'>
-                  Select Group
-                </InputLabel>
-                <Select
-                  labelId='demo-simple-select-label'
-                  id='demo-simple-select'
-                  value={group}
-                  label='Select Group'
-                  onChange={handleChangeGroup}
-                >
-                  <MenuItem value={10}>Pizza</MenuItem>
-                  <MenuItem value={20}>Burger</MenuItem>
-                  <MenuItem value={20}>Steak</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-label'>Status</InputLabel>
-                <Select
-                  labelId='demo-simple-select-label'
-                  id='demo-simple-select'
-                  value={status}
-                  label='Status'
-                  onChange={handleChange}
-                >
-                  <MenuItem value={10}>Active</MenuItem>
-                  <MenuItem value={20}>In Active</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <TextField
-                type='text'
-                label='Font Size'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <TextField
-                type='text'
-                label='Font Color'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <TextField
-                type='text'
-                label='Item Color'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={4}
-            >
-              <TextField
-                type='text'
-                label='Price'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={4}
-            >
-              <TextField
-                type='text'
-                label='Price (With GST)'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={4}
-            >
-              <TextField
-                type='text'
-                label='Price (Without GST)'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={12}
-            >
-              <Button variant='contained' color='primary'>
-                Save
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      )}
-
-      {/* Edit Item */}
-      {active === 'editItem' && (
-        <Box
-          display='grid'
-          gridTemplateColumns='repeat(12, 1fr)'
-          gridAutoRows='160px'
-          gap='20px'
-          sx={{
-            '& > div': {
-              gridColumn: isNonMediumScreens ? undefined : 'span 12'
-            }
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={items}
+          columns={columns}
+          getRowId={(row) => row._id}
+          components={{
+            Toolbar: GridToolbar,
           }}
-        >
-          <Box
-            gridColumn='span 12'
-            gridRow='span 3'
-            my='20px'
-            sx={{
-              '& .MuiDataGrid-root': {
-                border: 'none',
-                borderRadius: '5rem'
-              },
-              '& .MuiDataGrid-cell': {
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-virtualScroller': {
-                backgroundColor: theme.palette.background.alt
-              },
-              '& .MuiDataGrid-footerContainer': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderTop: 'none'
-              },
-              '& .MuiDataGrid-toolbarContainer .MuiButton-text': {
-                color: `${theme.palette.secondary[200]} !important`
-              }
-            }}
-          >
-            <DataGrid
-              loading={isLoading || !data}
-              getRowId={row => row._id}
-              rows={(data && data.transactions) || []}
-              columns={columns}
-            />
-          </Box>
-        </Box>
+        />
+      </div>
+
+      {editItemId && (
+        <div>
+          <h2>Edit Item</h2>
+          <input
+            type="text"
+            name="name"
+            value={editItemData.name}
+            onChange={handleEditInputChange}
+            placeholder="Name"
+          />
+          <input
+            type="text"
+            name="selectGroup"
+            value={editItemData.selectGroup}
+            onChange={handleEditInputChange}
+            placeholder="Select Group"
+          />
+          <input
+            type="text"
+            name="status"
+            value={editItemData.status}
+            onChange={handleEditInputChange}
+            placeholder="Status"
+          />
+          <input
+            type="number"
+            name="fontSize"
+            value={editItemData.fontSize}
+            onChange={handleEditInputChange}
+            placeholder="Font Size"
+          />
+          <input
+            type="text"
+            name="fontColor"
+            value={editItemData.fontColor}
+            onChange={handleEditInputChange}
+            placeholder="Font Color"
+          />
+          <input
+            type="text"
+            name="itemColor"
+            value={editItemData.itemColor}
+            onChange={handleEditInputChange}
+            placeholder="Item Color"
+          />
+          <input
+            type="number"
+            name="price"
+            value={editItemData.price}
+            onChange={handleEditInputChange}
+            placeholder="Price"
+          />
+          <input
+            type="number"
+            name="priceWithGST"
+            value={editItemData.priceWithGST}
+            onChange={handleEditInputChange}
+            placeholder="Price with GST"
+          />
+          <input
+            type="number"
+            name="priceWithoutGST"
+            value={editItemData.priceWithoutGST}
+            onChange={handleEditInputChange}
+            placeholder="Price without GST"
+          />
+         <label>
+            Is Active:
+            <select
+              name="isActive"
+              value={editItemData.isActive}
+              onChange={handleEditInputChange}
+            >
+              <option value="">Select</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </label>
+          <button onClick={handleEditItemSave}>Save</button>
+          <button onClick={closeEditDialog}>Cancel</button>
+        </div>
       )}
 
-      {/* Delete Item */}
-      {active === 'deleteItem' && (
-        <Box
-          display='grid'
-          gridTemplateColumns='repeat(12, 1fr)'
-          gridAutoRows='160px'
-          gap='20px'
-          sx={{
-            '& > div': {
-              gridColumn: isNonMediumScreens ? undefined : 'span 12'
-            }
-          }}
-        >
-          <Box
-            gridColumn='span 12'
-            gridRow='span 3'
-            my='20px'
-            sx={{
-              '& .MuiDataGrid-root': {
-                border: 'none',
-                borderRadius: '5rem'
-              },
-              '& .MuiDataGrid-cell': {
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-virtualScroller': {
-                backgroundColor: theme.palette.background.alt
-              },
-              '& .MuiDataGrid-footerContainer': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderTop: 'none'
-              },
-              '& .MuiDataGrid-toolbarContainer .MuiButton-text': {
-                color: `${theme.palette.secondary[200]} !important`
-              }
-            }}
-          >
-            <DataGrid
-              loading={isLoading || !data}
-              getRowId={row => row._id}
-              rows={(data && data.transactions) || []}
-              columns={columns}
-            />
-          </Box>
-        </Box>
-      )}
-    </Box>
-  )
-}
+      <div>
+        <h2>Create Item</h2>
+        <input
+          type="text"
+          name="name"
+          value={newItemData.name}
+          onChange={handleNewItemInputChange}
+          placeholder="Name"
+        />
+        <input
+          type="text"
+          name="selectGroup"
+          value={newItemData.selectGroup}
+          onChange={handleNewItemInputChange}
+          placeholder="Select Group"
+        />
+        <input
+          type="text"
+          name="status"
+          value={newItemData.status}
+          onChange={handleNewItemInputChange}
+          placeholder="Status"
+        />
+        <input
+          type="number"
+          name="fontSize"
+          value={newItemData.fontSize}
+          onChange={handleNewItemInputChange}
+          placeholder="Font Size"
+        />
+        <input
+          type="text"
+          name="fontColor"
+          value={newItemData.fontColor}
+          onChange={handleNewItemInputChange}
+          placeholder="Font Color"
+        />
+        <input
+          type="text"
+          name="itemColor"
+          value={newItemData.itemColor}
+          onChange={handleNewItemInputChange}
+          placeholder="Item Color"
+        />
+        <input
+          type="number"
+          name="price"
+          value={newItemData.price}
+          onChange={handleNewItemInputChange}
+          placeholder="Price"
+        />
+        <input
+          type="number"
+          name="priceWithGST"
+          value={newItemData.priceWithGST}
+          onChange={handleNewItemInputChange}
+          placeholder="Price with GST"
+        />
+        <input
+          type="number"
+          name="priceWithoutGST"
+          value={newItemData.priceWithoutGST}
+          onChange={handleNewItemInputChange}
+          placeholder="Price without GST"
+        />
+      <label>
+            Is Active:
+            <select
+              name="isActive"
+              value={editItemData.isActive}
+              onChange={handleEditInputChange}
+            >
+              <option value="">Select</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </label>
+        <button onClick={handleNewItemSave}>Create</button>
+      </div>
+    </div>
+  );
+};
 
-export default InventoryItem
+export default InventoryItemManagement;

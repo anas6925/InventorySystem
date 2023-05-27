@@ -21,7 +21,7 @@ import Performance from "scenes/performance";
 import InventoryGroup from "scenes/inventory/group";
 import InventoryItem from "scenes/inventory/items";
 import InventoryBrand from "scenes/inventory/brand";
-import InventoryRawItem from "scenes/inventory/raw-item";
+import InventoryRawItem from "scenes/inventory/rawItem";
 import InventoryVendorManagement from "scenes/inventory/vendor-management";
 
 // Settings Imports

@@ -1,269 +1,205 @@
-import React, { useState } from 'react'
-import FlexBetween from 'components/FlexBetween'
-import Header from 'components/Header'
-import Grid from '@mui/material/Grid'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
-import { Add, Edit, Delete } from '@mui/icons-material'
-import { Box, Button, TextField, useTheme, useMediaQuery } from '@mui/material'
-import { DataGrid } from '@mui/x-data-grid'
-import { useGetDashboardQuery } from 'state/api'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-const InventoryBrand = () => {
-  const [active, setActive] = useState('addBrand')
-  const theme = useTheme()
-  const isNonMediumScreens = useMediaQuery('(min-width: 1200px)')
-  const { data, isLoading } = useGetDashboardQuery()
-  const [status, setStatus] = useState('')
+const InventoryBrandManagement = () => {
+  const [brands, setBrands] = useState([]);
+  const [editBrandId, setEditBrandId] = useState(null);
+  const [editBrandData, setEditBrandData] = useState({
+    name: '',
+    status: '',
+  });
+  const [newBrandData, setNewBrandData] = useState({
+    name: '',
+    status: '',
+  });
 
-  const handleChange = event => {
-    setStatus(event.target.value)
-  }
+  useEffect(() => {
+    fetchBrands();
+  }, []);
+
+  const fetchBrands = async () => {
+    try {
+      const response = await axios.get('http://localhost:5001/api/brands');
+      if (response.status === 200) {
+        setBrands(response.data);
+      } else {
+        throw new Error('Error fetching brands');
+      }
+    } catch (error) {
+      console.error('Error fetching brands:', error);
+    }
+  };
+
+  const handleEditBrand = (brandId) => {
+    // Find the brand data to edit
+    const brandToEdit = brands.find((brand) => brand._id === brandId);
+    if (brandToEdit) {
+      setEditBrandId(brandId);
+      setEditBrandData(brandToEdit);
+    }
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditBrandData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleEditBrandSave = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5001/api/brands/${editBrandId}`,
+        editBrandData
+      );
+      if (response.status === 200) {
+        // Update the edited brand in the state
+        setBrands((prevBrands) =>
+          prevBrands.map((brand) =>
+            brand._id === editBrandId ? { ...brand, ...editBrandData } : brand
+          )
+        );
+        closeEditDialog(); // Close the edit dialog
+        console.log(`Successfully edited brand with ID: ${editBrandId}`);
+      } else {
+        throw new Error('Error editing brand');
+      }
+    } catch (error) {
+      console.error('Error editing brand:', error);
+    }
+  };
+
+  const closeEditDialog = () => {
+    setEditBrandId(null);
+    setEditBrandData({
+      name: '',
+      status: '',
+    });
+  };
+
+  const handleNewBrandInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewBrandData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleNewBrandSave = async () => {
+    try {
+      const response = await axios.post('http://localhost:5001/api/brands', newBrandData);
+      if (response.status === 201) {
+        const createdBrand = response.data;
+        // Add the created brand to the state
+        setBrands((prevBrands) => [...prevBrands, createdBrand]);
+        closeNewBrandDialog(); // Close the new brand dialog
+        console.log(`Successfully created brand with ID: ${createdBrand._id}`);
+      } else {
+        throw new Error('Error creating brand');
+      }
+    } catch (error) {
+      console.error('Error creating brand:', error);
+    }
+  };
+
+  const closeNewBrandDialog = () => {
+    setNewBrandData({
+      name: '',
+      status: '',
+    });
+  };
+
+  const handleDeleteBrand = async (brandId) => {
+    try {
+      const response = await axios.delete(`http://localhost:5001/api/brands/${brandId}`);
+      if (response.status === 200) {
+        // Remove the deleted brand from the state
+        setBrands((prevBrands) => prevBrands.filter((brand) => brand._id !== brandId));
+        console.log(`Successfully deleted brand with ID: ${brandId}`);
+      } else {
+        throw new Error('Error deleting brand');
+      }
+    } catch (error) {
+      console.error('Error deleting brand:', error);
+    }
+  };
 
   const columns = [
+    { field: 'name', headerName: 'Name', width: 200 },
+    { field: 'status', headerName: 'Status', width: 150 },
     {
-      field: 'brand_id',
-      headerName: 'Brand ID',
-      flex: 1
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      sortable: false,
+      renderCell: (params) => (
+        <>
+          <button onClick={() => handleEditBrand(params.row._id)}>Edit</button>
+          <button onClick={() => handleDeleteBrand(params.row._id)}>Delete</button>
+        </>
+      ),
     },
-    {
-      field: 'brand_name',
-      headerName: 'Brand Name',
-      flex: 1
-    },
-    {
-      field: 'brand_status',
-      headerName: 'Status',
-      flex: 1,
-    }
-  ]
+  ];
 
   return (
-    <Box m='1.5rem 2.5rem'>
-      <FlexBetween>
-        {active === 'addBrand' && <Header title='ADD BRAND' />}
+    <div>
+      <h2>Brand Management</h2>
 
-        {active === 'editBrand' && <Header title='EDIT BRAND' />}
-
-        {active === 'deleteBrand' && <Header title='DELETE BRAND' />}
-
-        <Box>
-          <Button
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px',
-              margin: '3px'
-            }}
-            onClick={() => setActive('addBrand')}
-          >
-            <Add sx={{ mr: '10px' }} />
-            Add Brand
-          </Button>
-
-          <Button
-            onClick={() => setActive('editBrand')}
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px'
-            }}
-          >
-            <Edit sx={{ mr: '10px' }} />
-            Edit Brand
-          </Button>
-
-          <Button
-            onClick={() => setActive('deleteBrand')}
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px',
-              margin: '3px'
-            }}
-          >
-            <Delete sx={{ mr: '10px' }} />
-            Delete Brand
-          </Button>
-        </Box>
-      </FlexBetween>
-
-      {/* Add Brand  */}
-      {active === 'addBrand' && (
-        <Box my='20px' sx={{ width: '100%' }}>
-          <Grid
-            container
-            rowSpacing={1}
-            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-          >
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <TextField
-                type='text'
-                label='Name'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-label'>Status</InputLabel>
-                <Select
-                  labelId='demo-simple-select-label'
-                  id='demo-simple-select'
-                  value={status}
-                  label='Status'
-                  onChange={handleChange}
-                >
-                  <MenuItem value={10}>Active</MenuItem>
-                  <MenuItem value={20}>In Active</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={12}
-            >
-              <Button variant='contained' color='primary'>
-                Save
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      )}
-
-      {/* Edit Brand */}
-      {active === 'editBrand' && (
-        <Box
-          display='grid'
-          gridTemplateColumns='repeat(12, 1fr)'
-          gridAutoRows='160px'
-          gap='20px'
-          sx={{
-            '& > div': {
-              gridColumn: isNonMediumScreens ? undefined : 'span 12'
-            }
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={brands}
+          columns={columns}
+          getRowId={(row) => row._id}
+          components={{
+            Toolbar: GridToolbar,
           }}
-        >
-          <Box
-            gridColumn='span 12'
-            gridRow='span 3'
-            my='20px'
-            sx={{
-              '& .MuiDataGrid-root': {
-                border: 'none',
-                borderRadius: '5rem'
-              },
-              '& .MuiDataGrid-cell': {
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-virtualScroller': {
-                backgroundColor: theme.palette.background.alt
-              },
-              '& .MuiDataGrid-footerContainer': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderTop: 'none'
-              },
-              '& .MuiDataGrid-toolbarContainer .MuiButton-text': {
-                color: `${theme.palette.secondary[200]} !important`
-              }
-            }}
-          >
-            <DataGrid
-              loading={isLoading || !data}
-              getRowId={row => row._id}
-              rows={(data && data.transactions) || []}
-              columns={columns}
-            />
-          </Box>
-        </Box>
+        />
+      </div>
+
+      {editBrandId && (
+        <div>
+          <h2>Edit Brand</h2>
+          <input
+            type="text"
+            name="name"
+            value={editBrandData.name}
+            onChange={handleEditInputChange}
+            placeholder="Name"
+          />
+          <input
+            type="text"
+            name="status"
+            value={editBrandData.status}
+            onChange={handleEditInputChange}
+            placeholder="Status"
+          />
+          <button onClick={handleEditBrandSave}>Save</button>
+          <button onClick={closeEditDialog}>Cancel</button>
+        </div>
       )}
 
-      {/* Delete Brand */}
-      {active === 'deleteBrand' && (
-        <Box
-          display='grid'
-          gridTemplateColumns='repeat(12, 1fr)'
-          gridAutoRows='160px'
-          gap='20px'
-          sx={{
-            '& > div': {
-              gridColumn: isNonMediumScreens ? undefined : 'span 12'
-            }
-          }}
-        >
-          <Box
-            gridColumn='span 12'
-            gridRow='span 3'
-            my='20px'
-            sx={{
-              '& .MuiDataGrid-root': {
-                border: 'none',
-                borderRadius: '5rem'
-              },
-              '& .MuiDataGrid-cell': {
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-virtualScroller': {
-                backgroundColor: theme.palette.background.alt
-              },
-              '& .MuiDataGrid-footerContainer': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderTop: 'none'
-              },
-              '& .MuiDataGrid-toolbarContainer .MuiButton-text': {
-                color: `${theme.palette.secondary[200]} !important`
-              }
-            }}
-          >
-            <DataGrid
-              loading={isLoading || !data}
-              getRowId={row => row._id}
-              rows={(data && data.transactions) || []}
-              columns={columns}
-            />
-          </Box>
-        </Box>
-      )}
-    </Box>
-  )
-}
+      <div>
+        <h2>Create Brand</h2>
+        <input
+          type="text"
+          name="name"
+          value={newBrandData.name}
+          onChange={handleNewBrandInputChange}
+          placeholder="Name"
+        />
+        <input
+          type="text"
+          name="status"
+          value={newBrandData.status}
+          onChange={handleNewBrandInputChange}
+          placeholder="Status"
+        />
+        <button onClick={handleNewBrandSave}>Create</button>
+      </div>
+    </div>
+  );
+};
 
-export default InventoryBrand
+export default InventoryBrandManagement;
