@@ -1,45 +1,33 @@
 import mongoose from "mongoose";
 
-const VendorSchema = new mongoose.Schema({
-  name: {
+const studentSchema = new mongoose.Schema({
+  course: {
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  phone: {
+  studentname: {
     type: String,
     required: true,
   },
-  address: {
+  studentcontact: {
     type: String,
     required: true,
   },
-  city: {
+  studentaddress: {
     type: String,
     required: true,
   },
-  state: {
+  studentemail: {
     type: String,
     required: true,
   },
-  country: {
+  studentpassword: {
     type: String,
     required: true,
   },
-  postalCode: {
+  studentstatus: {
     type: String,
     required: true,
-  },
-  website: {
-    type: String,
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
   },
   createdAt: {
     type: Date,
@@ -51,7 +39,5 @@ const VendorSchema = new mongoose.Schema({
   },
 });
 
-
-
-const Vendor = mongoose.model("Vendor", VendorSchema);
-export default Vendor;
+const Student = mongoose.model("Student", studentSchema);
+export default Student;

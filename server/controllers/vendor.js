@@ -1,5 +1,6 @@
 
 import Vendor from "../models/Vendor.js";
+import mongoose from 'mongoose';
 
 // Rest of the code for the route handlers
 
@@ -30,13 +31,17 @@ export const getVendors = async (req, res) => {
 export const getVendorById = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid Vendor ID' });
+    }
+
     const vendor = await Vendor.findById(id);
     if (!vendor) {
-      return res.status(404).json({ message: "Vendor not found" });
+      return res.status(404).json({ message: 'Vendor not found' });
     }
     res.status(200).json(vendor);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(500).json({ message: 'Error occurred while retrieving vendor', error: error.message });
   }
 };
 

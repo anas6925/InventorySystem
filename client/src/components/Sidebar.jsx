@@ -18,12 +18,6 @@ import {
   Groups2Outlined,
   ReceiptLongOutlined,
   PublicOutlined,
-  // // PointOfSaleOutlined,
-  // TodayOutlined,
-  // CalendarMonthOutlined,
-  AdminPanelSettingsOutlined,
-  TrendingUpOutlined,
-  // PieChartOutlined,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -35,76 +29,49 @@ const navItems = [
     icon: <HomeOutlined />,
   },
 
-  // Sidebar Item 1
-  // {
-  //   text: "Sales Report",
-  //   icon: null,
-  // },
-  // {
-  //   text: "General",
-  //   icon: <PieChartOutlined />,
-  // },
-  // {
-  //   text: "Group",
-  //   icon: <PointOfSaleOutlined />,
-  // },
-  // {
-  //   text: "Item",
-  //   icon: <TodayOutlined />,
-  // },
-  // {
-  //   text: "GST",
-  //   icon: <PieChartOutlined />,
-  // },
-  // {
-  //   text: "Invoice",
-  //   icon: <CalendarMonthOutlined />,
-  // },
-  // {
-  //   text: "Payment",
-  //   icon: <PieChartOutlined />,
-  // },
-  // {
-  //   text: "Discount",
-  //   icon: <PieChartOutlined />,
-  // },
-  // {
-  //   text: "Complimentary",
-  //   icon: <PieChartOutlined />,
-  // },
-  // Sidebar Item 1
 
-  // Sidebar Item 2
+  // Sidebar Item 1
   {
-    text: "Accounts",
+    text: "Students",
     icon: null,
   },
   {
-    text: "Code of account",
+    text: "All Students",
     icon: <Groups2Outlined />,
   },
   {
-    text: "Chart of account",
+    text: "Archieved Students",
     icon: <ReceiptLongOutlined />,
   },
   {
-    text: "Trial balance",
+    text: "DropOut Students",
     icon: <PublicOutlined />,
   },
   {
-    text: "Balance sheet",
+    text: "Invite Students",
+    icon: <PublicOutlined />,
+  },
+  // Sidebar Item 1 End
+
+  // Sidebar Item 2
+  {
+    text: "Courses",
+    icon: null,
+  },
+  {
+    text: "All Courses",
+    icon: <Groups2Outlined />,
+  },
+  {
+    text: "Archieved Courses",
+    icon: <ReceiptLongOutlined />,
+  },
+  {
+    text: "All Chapters",
     icon: <PublicOutlined />,
   },
   {
-    text: "Profit and Loss statement",
-    icon: <PublicOutlined />,
-  },
-  {
-    text: "Ledger",
-    icon: <PublicOutlined />,
-  },
-  {
-    text: "Day book",
+    text: "Add Course",
     icon: <PublicOutlined />,
   },
   // Sidebar Item 2 End
@@ -137,30 +104,7 @@ const navItems = [
   },
   // Sidebar Item 3 End
 
-  {
-    text: "Settings",
-    icon: null,
-  },
-  {
-    text: "Purchase-Amount-Limiter",
-    icon: <AdminPanelSettingsOutlined />,
-  },
-  {
-    text: "Discount-Keys",
-    icon: <TrendingUpOutlined />,
-  },
-  {
-    text: "Bank",
-    icon: <TrendingUpOutlined />,
-  },
-  {
-    text: "GST",
-    icon: <TrendingUpOutlined />,
-  },
-  {
-    text: "Unit-of-Measure",
-    icon: <TrendingUpOutlined />,
-  },
+ 
 ];
 
 const Sidebar = ({

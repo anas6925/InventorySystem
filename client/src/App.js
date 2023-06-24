@@ -21,15 +21,12 @@ import Performance from "scenes/performance";
 import InventoryGroup from "scenes/inventory/group";
 import InventoryItem from "scenes/inventory/items";
 import InventoryBrand from "scenes/inventory/brand";
-import InventoryRawItem from "scenes/inventory/raw-item";
+import InventoryRawItem from "scenes/inventory/rawItem";
 import InventoryVendorManagement from "scenes/inventory/vendor-management";
-
-// Settings Imports
-import SettingsPurchasesAmountLimiter from "scenes/settings/purchases-amount-limiter";
-import SettingsDiscountKeys from "scenes/settings/discount-keys";
-import SettingsGst from "scenes/settings/gst";
-import SettingsUnitOfMeasure from "scenes/settings/unit-of-measure";
-
+import InviteStudents from "scenes/students/inviteStudent/invitestudent";
+import AllStudents from 'scenes/students/allStudent/allStudent' ;
+import ArchievedStudents from 'scenes/students/archievedStudents/archievedStudents';
+import DropOutStudents from 'scenes/students/dropoutStudents/dropoutStudents'; 
 function App() {
   const mode = useSelector((state) => state.global.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
@@ -59,12 +56,12 @@ function App() {
               <Route path="/brand" element={<InventoryBrand />} />
               <Route path="/raw-item" element={<InventoryRawItem />} />
               <Route path="/vendor-management" element={<InventoryVendorManagement />} />
-              {/* Settings Routes */}
-              <Route path="/purchase-amount-limiter" element={<SettingsPurchasesAmountLimiter />} />
-              <Route path="/discount-keys" element={<SettingsDiscountKeys />} />
-              <Route path="/gst" element={<SettingsGst />} />
-              <Route path="/unit-of-measure" element={<SettingsUnitOfMeasure />} />
-
+              
+              {/* Students Routes */}
+              <Route path="/Invite Students" element={<InviteStudents />} /> 
+              <Route path="/All Students" element={<AllStudents />} />
+              <Route path="/Archieved Students" element={<ArchievedStudents />} />
+              <Route path="/DropOut Students" element={<DropOutStudents />} />    
             </Route>
           </Routes>
         </ThemeProvider>

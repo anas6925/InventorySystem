@@ -1,333 +1,288 @@
-import React, { useState } from 'react';
-import FlexBetween from 'components/FlexBetween';
-import Header from 'components/Header';
-import Grid from '@mui/material/Grid';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import { Add, Edit, Delete } from '@mui/icons-material';
-import { Box, Button, TextField, useTheme, useMediaQuery } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import { useGetDashboardQuery } from 'state/api';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-const InventoryGroup = () => {
-  const [active, setActive] = useState('addGroup');
-  const theme = useTheme();
-  const isNonMediumScreens = useMediaQuery('(min-width: 1200px)');
-  const { data, isLoading } = useGetDashboardQuery();
-  const [status, setStatus] = useState('');
+const InventoryGroupManagement = () => {
+  const [groups, setGroups] = useState([]);
+  const [editGroupId, setEditGroupId] = useState(null);
+  const [editGroupData, setEditGroupData] = useState({
+    name: '',
+    color: '',
+    status: '',
+    fontSize: 0,
+    fontColor: '',
+    isActive: '',
+  });
+  const [newGroupData, setNewGroupData] = useState({
+    name: '',
+    color: '',
+    status: '',
+    fontSize: 0,
+    fontColor: '',
+    isActive: '',
+  });
 
-  const handleChange = event => {
-    setStatus(event.target.value);
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const fetchGroups = async () => {
+    try {
+      const response = await axios.get('http://localhost:5001/api/groups');
+      if (response.status === 200) {
+        setGroups(response.data);
+      } else {
+        throw new Error('Error fetching groups');
+      }
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+    }
+  };
+
+  const handleEditGroup = (groupId) => {
+    // Find the group data to edit
+    const groupToEdit = groups.find((group) => group._id === groupId);
+    if (groupToEdit) {
+      setEditGroupId(groupId);
+      setEditGroupData(groupToEdit);
+    }
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditGroupData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleEditGroupSave = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5001/api/groups/${editGroupId}`,
+        editGroupData
+      );
+      if (response.status === 200) {
+        // Update the edited group in the state
+        setGroups((prevGroups) =>
+          prevGroups.map((group) =>
+            group._id === editGroupId ? { ...group, ...editGroupData } : group
+          )
+        );
+        closeEditDialog(); // Close the edit dialog
+        console.log(`Successfully edited group with ID: ${editGroupId}`);
+      } else {
+        throw new Error('Error editing group');
+      }
+    } catch (error) {
+      console.error('Error editing group:', error);
+    }
+  };
+
+  const closeEditDialog = () => {
+    setEditGroupId(null);
+    setEditGroupData({
+      name: '',
+      color: '',
+      status: '',
+      fontSize: 0,
+      fontColor: '',
+      isActive: '',
+    });
+  };
+
+  
+  const handleNewGroupSave = async () => {
+    try {
+      const response = await axios.post('http://localhost:5001/api/groups', newGroupData);
+      if (response.status === 201) {
+        const createdGroup = response.data;
+        // Add the created group to the state
+        setGroups((prevGroups) => [...prevGroups, createdGroup]);
+        closeNewGroupDialog(); // Close the new group dialog
+        console.log(`Successfully created group with ID: ${createdGroup._id}`);
+      } else {
+        throw new Error('Error creating group');
+      }
+    } catch (error) {
+      console.error('Error creating group:', error);
+    }
+  };
+
+  const closeNewGroupDialog = () => {
+    setNewGroupData({
+      name: '',
+      color: '',
+      status: '',
+      fontSize: 0,
+      fontColor: '',
+      isActive: '',
+    });
+  };
+
+  const handleDeleteGroup = async (groupId) => {
+    try {
+      const response = await axios.delete(`http://localhost:5001/api/groups/${groupId}`);
+      if (response.status === 200) {
+        // Remove the deleted group from the state
+        setGroups((prevGroups) => prevGroups.filter((group) => group._id !== groupId));
+        console.log(`Successfully deleted group with ID: ${groupId}`);
+      } else {
+        throw new Error('Error deleting group');
+      }
+    } catch (error) {
+      console.error('Error deleting group:', error);
+    }
   };
 
   const columns = [
+    { field: 'name', headerName: 'Name', width: 200 },
+    { field: 'color', headerName: 'Color', width: 150 },
+    { field: 'status', headerName: 'Status', width: 150 },
+    { field: 'fontSize', headerName: 'Font Size', width: 150 },
+    { field: 'fontColor', headerName: 'Font Color', width: 150 },
+    { field: 'isActive', headerName: 'Active', width: 120, type: 'boolean' },
     {
-      field: 'group_id',
-      headerName: 'Group ID',
-      flex: 1
-    },
-    {
-      field: 'group_name',
-      headerName: 'Name',
-      flex: 1
-    },
-    {
-      field: 'group_color',
-      headerName: 'Color',
-      flex: 1
-    },
-    {
-      field: 'group_status',
-      headerName: 'Status',
-      flex: 0.5,
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
       sortable: false,
-      renderCell: params => params.value.length
+      renderCell: (params) => (
+        <>
+          <button onClick={() => handleEditGroup(params.row._id)}>Edit</button>
+          <button onClick={() => handleDeleteGroup(params.row._id)}>Delete</button>
+        </>
+      ),
     },
-    {
-      field: 'group_font_size',
-      headerName: 'Font Size',
-      flex: 1,
-      renderCell: params => `$${Number(params.value).toFixed(2)}`
-    },
-    {
-      field: 'group_font_color',
-      headerName: 'Font Color',
-      flex: 1,
-      renderCell: params => `$${Number(params.value).toFixed(2)}`
-    }
   ];
-
- 
-
+  const handleNewGroupInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    setNewGroupData((prevData) => ({
+      ...prevData,
+      [name]: newValue,
+    }));
+  };
+  
   return (
-    <Box m='1.5rem 2.5rem'>
-      <FlexBetween>
-        {active === 'addGroup' && <Header title='ADD GROUP' />}
+    <div>
+      <h2>Group Management</h2>
 
-        {active === 'editGroup' && <Header title='EDIT GROUP' />}
-
-        {active === 'deleteGroup' && <Header title='DELETE GROUP' />}
-
-        <Box>
-          <Button
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px',
-              margin: '3px'
-            }}
-            onClick={() => setActive('addGroup')}
-          >
-            <Add sx={{ mr: '10px' }} />
-            Add Group
-          </Button>
-
-          <Button
-            onClick={() => setActive('editGroup')}
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px'
-            }}
-          >
-            <Edit sx={{ mr: '10px' }} />
-            Edit Group
-          </Button>
-
-          <Button
-            onClick={() => setActive('deleteGroup')}
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: '14px',
-              fontWeight: 'bold',
-              padding: '10px 20px',
-              margin: '3px'
-            }}
-          >
-            <Delete sx={{ mr: '10px' }} />
-            Delete Group
-          </Button>
-        </Box>
-      </FlexBetween>
-
-      {/* Add Group  */}
-      {active === 'addGroup' && (
-        <Box my='20px' sx={{ width: '100%' }}>
-          <Grid
-            container
-            rowSpacing={1}
-            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-          >
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <TextField
-                type='text'
-                label='Name'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <TextField
-                type='text'
-                label='Color'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-label'>Status</InputLabel>
-                <Select
-                  labelId='demo-simple-select-label'
-                  id='demo-simple-select'
-                  value={status}
-                  label='Status'
-                  onChange={handleChange}
-                >
-                  <MenuItem value={10}>Active</MenuItem>
-                  <MenuItem value={20}>In Active</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={6}
-            >
-              <TextField
-                type='text'
-                label='Font Size'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={12}
-            >
-              <TextField
-                type='text'
-                label='Font Color'
-                variant='outlined'
-                fullWidth
-              />
-            </Grid>
-            <Grid
-              item
-              container
-              direction='row'
-              alignItems='center'
-              justifyContent='center'
-              xs={12}
-            >
-             
-            </Grid>
-          </Grid>
-        </Box>
-      )}
-
-      {/* Edit Group */}
-      {active === 'editGroup' && (
-        <Box
-          display='grid'
-          gridTemplateColumns='repeat(12, 1fr)'
-          gridAutoRows='160px'
-          gap='20px'
-          sx={{
-            '& > div': {
-              gridColumn: isNonMediumScreens ? undefined : 'span 12'
-            }
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={groups}
+          columns={columns}
+          getRowId={(row) => row._id}
+          components={{
+            Toolbar: GridToolbar,
           }}
-        >
-          <Box
-            gridColumn='span 12'
-            gridRow='span 3'
-            my='20px'
-            sx={{
-              '& .MuiDataGrid-root': {
-                border: 'none',
-                borderRadius: '5rem'
-              },
-              '& .MuiDataGrid-cell': {
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-virtualScroller': {
-                backgroundColor: theme.palette.background.alt
-              },
-              '& .MuiDataGrid-footerContainer': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderTop: 'none'
-              },
-              '& .MuiDataGrid-toolbarContainer .MuiButton-text': {
-                color: `${theme.palette.secondary[200]} !important`
-              }
-            }}
-          >
-            <DataGrid
-              loading={isLoading || !data}
-              getRowId={row => row._id}
-              rows={(data && data.transactions) || []}
-              columns={columns}
-            />
-          </Box>
-        </Box>
+        />
+      </div>
+
+      {editGroupId && (
+        <div>
+          <h2>Edit Group</h2>
+          <input
+            type="text"
+            name="name"
+            value={editGroupData.name}
+            onChange={handleEditInputChange}
+            placeholder="Name"
+          />
+          <input
+            type="text"
+            name="color"
+            value={editGroupData.color}
+            onChange={handleEditInputChange}
+            placeholder="Color"
+          />
+          <input
+            type="text"
+            name="status"
+            value={editGroupData.status}
+            onChange={handleEditInputChange}
+            placeholder="Status"
+          />
+          <input
+            type="number"
+            name="fontSize"
+            value={editGroupData.fontSize}
+            onChange={handleEditInputChange}
+            placeholder="Font Size"
+          />
+          <input
+            type="text"
+            name="fontColor"
+            value={editGroupData.fontColor}
+            onChange={handleEditInputChange}
+            placeholder="Font Color"
+          />
+          <label>
+            Active:
+            <input
+  type="checkbox"
+  name="isActive"
+  checked={newGroupData.isActive}
+  onChange={handleNewGroupInputChange}
+/>
+
+          </label>
+          <button onClick={handleEditGroupSave}>Save</button>
+          <button onClick={closeEditDialog}>Cancel</button>
+        </div>
       )}
 
-      {/* Delete Group */}
-      {active === 'deleteGroup' && (
-        <Box
-          display='grid'
-          gridTemplateColumns='repeat(12, 1fr)'
-          gridAutoRows='160px'
-          gap='20px'
-          sx={{
-            '& > div': {
-              gridColumn: isNonMediumScreens ? undefined : 'span 12'
-            }
-          }}
-        >
-          <Box
-            gridColumn='span 12'
-            gridRow='span 3'
-            my='20px'
-            sx={{
-              '& .MuiDataGrid-root': {
-                border: 'none',
-                borderRadius: '5rem'
-              },
-              '& .MuiDataGrid-cell': {
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderBottom: 'none'
-              },
-              '& .MuiDataGrid-virtualScroller': {
-                backgroundColor: theme.palette.background.alt
-              },
-              '& .MuiDataGrid-footerContainer': {
-                backgroundColor: theme.palette.background.alt,
-                color: theme.palette.secondary[100],
-                borderTop: 'none'
-              },
-              '& .MuiDataGrid-toolbarContainer .MuiButton-text': {
-                color: `${theme.palette.secondary[200]} !important`
-              }
-            }}
-          >
-            <DataGrid
-              loading={isLoading || !data}
-              getRowId={row => row._id}
-              rows={(data && data.transactions) || []}
-              columns={columns}
-            />
-          </Box>
-        </Box>
-      )}
-    </Box>
-  )
-}
+      <div>
+        <h2>Create Group</h2>
+        <input
+          type="text"
+          name="name"
+          value={newGroupData.name}
+          onChange={handleNewGroupInputChange}
+          placeholder="Name"
+        />
+        <input
+          type="text"
+          name="color"
+          value={newGroupData.color}
+          onChange={handleNewGroupInputChange}
+          placeholder="Color"
+        />
+        <input
+          type="text"
+          name="status"
+          value={newGroupData.status}
+          onChange={handleNewGroupInputChange}
+          placeholder="Status"
+        />
+        <input
+          type="number"
+          name="fontSize"
+          value={newGroupData.fontSize}
+          onChange={handleNewGroupInputChange}
+          placeholder="Font Size"
+        />
+        <input
+          type="text"
+          name="fontColor"
+          value={newGroupData.fontColor}
+          onChange={handleNewGroupInputChange}
+          placeholder="Font Color"
+        />
+        <label>
+          Active:
+          <input
+  type="checkbox"
+  name="isActive"
+  checked={newGroupData.isActive}
+  onChange={handleNewGroupInputChange}
+/>
 
-export default InventoryGroup
+        </label>
+        <button onClick={handleNewGroupSave}>Create</button>
+      </div>
+    </div>
+  );
+};
+
+export default InventoryGroupManagement;
