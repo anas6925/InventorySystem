@@ -26,7 +26,8 @@ import InventoryVendorManagement from "scenes/inventory/vendor-management";
 import InviteStudents from "scenes/students/inviteStudent/invitestudent";
 import AllStudents from 'scenes/students/allStudent/allStudent' ;
 import ArchievedStudents from 'scenes/students/archievedStudents/archievedStudents';
-import DropOutStudents from 'scenes/students/dropoutStudents/dropoutStudents'; 
+import DropOutStudents from 'scenes/students/dropoutStudents/dropoutStudents';
+import RecordingStudents from 'scenes/students/Recording/recording'; 
 function App() {
   const mode = useSelector((state) => state.global.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
@@ -58,10 +59,11 @@ function App() {
               <Route path="/vendor-management" element={<InventoryVendorManagement />} />
               
               {/* Students Routes */}
-              <Route path="/Invite Students" element={<InviteStudents />} /> 
-              <Route path="/All Students" element={<AllStudents />} />
-              <Route path="/Archieved Students" element={<ArchievedStudents />} />
-              <Route path="/DropOut Students" element={<DropOutStudents />} />    
+              <Route path="/Invite-Students" element={<InviteStudents />} /> 
+              <Route path="/All-Students" element={<AllStudents />} />
+              <Route path="/Archieved-Students" element={<ArchievedStudents />} />
+              <Route path="/DropOut-Students" element={<DropOutStudents />} /> 
+              <Route path="/Recording-Students" element={<RecordingStudents />} />   
             </Route>
           </Routes>
         </ThemeProvider>

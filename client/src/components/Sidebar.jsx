@@ -36,19 +36,23 @@ const navItems = [
     icon: null,
   },
   {
-    text: "All Students",
+    text: "All-Students",
     icon: <Groups2Outlined />,
   },
   {
-    text: "Archieved Students",
+    text: "Archieved-Students",
     icon: <ReceiptLongOutlined />,
   },
   {
-    text: "DropOut Students",
+    text: "DropOut-Students",
     icon: <PublicOutlined />,
   },
   {
-    text: "Invite Students",
+    text: "Invite-Students",
+    icon: <PublicOutlined />,
+  },
+  {
+    text: "Recording-Students",
     icon: <PublicOutlined />,
   },
   // Sidebar Item 1 End
@@ -59,19 +63,19 @@ const navItems = [
     icon: null,
   },
   {
-    text: "All Courses",
+    text: "All-Courses",
     icon: <Groups2Outlined />,
   },
   {
-    text: "Archieved Courses",
+    text: "Archieved-Courses",
     icon: <ReceiptLongOutlined />,
   },
   {
-    text: "All Chapters",
+    text: "All-Chapters",
     icon: <PublicOutlined />,
   },
   {
-    text: "Add Course",
+    text: "Add-Course",
     icon: <PublicOutlined />,
   },
   // Sidebar Item 2 End
