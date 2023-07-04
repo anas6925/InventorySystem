@@ -14,7 +14,7 @@ import groupRoutes from "./routes/group.js";
 import itemsRoutes from "./routes/item.js";
 import studentRoutes from "./routes/student.js";
 import rawItemsRoutes from "./routes/RawItem.js";
-
+import routes from './routes/Register.js'
 
 /* CONFIGURATION */
 dotenv.config();
@@ -37,6 +37,7 @@ app.use("/api/groups", groupRoutes);
 app.use("/api/items", itemsRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/rawitems", rawItemsRoutes);
+app.use("/api/", routes);
 
 
 /* MONGOOSE SETUP */
