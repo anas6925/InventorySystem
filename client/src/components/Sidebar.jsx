@@ -24,6 +24,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
 
 const navItems = [
+
   {
     text: "Dashboard",
     icon: <HomeOutlined />,
@@ -63,21 +64,22 @@ const navItems = [
     icon: null,
   },
   {
-    text: "All-Courses",
-    icon: <Groups2Outlined />,
-  },
-  {
-    text: "Archieved-Courses",
-    icon: <ReceiptLongOutlined />,
-  },
-  {
-    text: "All-Chapters",
-    icon: <PublicOutlined />,
-  },
-  {
     text: "Add-Course",
     icon: <PublicOutlined />,
   },
+  {
+    text: "Add-Chapter",
+    icon: <Groups2Outlined />,
+  },
+  {
+    text: "Add-Category",
+    icon: <ReceiptLongOutlined />,
+  },
+  {
+    text: "Add-Resource",
+    icon: <PublicOutlined />,
+  },
+ 
   // Sidebar Item 2 End
 
   // Sidebar Item 3

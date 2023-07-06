@@ -27,3 +27,25 @@ body,
 ::-webkit-scrollbar-track:hover {
   background: #21295c;
 }
+.form-container {
+  text-align: center;
+}
+
+.form-input {
+  margin: 10px;
+  padding: 8px;
+  width: 200px;
+}
+
+.form-button {
+  margin: 10px;
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.error-message {
+  color: red;
+}

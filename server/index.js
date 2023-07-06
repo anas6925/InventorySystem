@@ -14,6 +14,11 @@ import groupRoutes from "./routes/group.js";
 import itemsRoutes from "./routes/item.js";
 import studentRoutes from "./routes/student.js";
 import rawItemsRoutes from "./routes/RawItem.js";
+import authRoutes  from './routes/authRoutes.js';
+import addCourseRoutes from './routes/addCourse.js'
+import addChapters from './routes/addChapter.js'
+import addCategory from "./routes/addCategory.js";
+import AddResource from "./routes/addResource.js";
 
 
 /* CONFIGURATION */
@@ -28,6 +33,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 /* ROUTES */
+app.use('/api/auth', authRoutes); 
 app.use("/api/client", clientRoutes);
 app.use("/api/general", generalRoutes);
 app.use("/api/management", managementRoutes);
@@ -36,8 +42,11 @@ app.use("/api/vendors", vendorRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/items", itemsRoutes);
 app.use("/api/students", studentRoutes);
-app.use("/api/rawitems", rawItemsRoutes);
-
+app.use("/api/rawitems", rawItemsRoutes); 
+app.use("/api/addCourse", addCourseRoutes);
+app.use("/api/addChapter", addChapters);
+app.use("/api/addCategory", addCategory);
+app.use("/api/addResource", AddResource);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;

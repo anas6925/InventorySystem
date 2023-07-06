@@ -69,26 +69,13 @@ const RecordingStudents = () => {
   return (
     <Box m="1.5rem 2.5rem">
       <FlexBetween>
-        {active === "addRawKey" && <Header title="INVITE STUDENT" />}
-        {active === "editRawKey" && <Header title="EDIT RAW ITEM" />}
-        {active === "deleteRawKey" && <Header title="DELETE RAW ITEM" />}
+      
+        {active === "addRawKey" && <Header title="Student Recordings" />}
+       
         <Box>
+          
           <Button
             onClick={() => setActive("addRawKey")}
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-              margin: "3px",
-            }}
-          >
-            <Add sx={{ mr: "10px" }} />
-            Invite Student
-          </Button>
-          <Button
-            onClick={() => setActive("editRawKey")}
             sx={{
               backgroundColor: theme.palette.secondary.light,
               color: theme.palette.background.alt,
@@ -98,28 +85,15 @@ const RecordingStudents = () => {
             }}
           >
             <Edit sx={{ mr: "10px" }} />
-            Edit Raw Item
+            Student Recordings
           </Button>
-          <Button
-            onClick={() => setActive("deleteRawKey")}
-            sx={{
-              backgroundColor: theme.palette.secondary.light,
-              color: theme.palette.background.alt,
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-              margin: "3px",
-            }}
-          >
-            <Delete sx={{ mr: "10px" }} />
-            Delete Raw Item
-          </Button>
+         
         </Box>
       </FlexBetween>
 
-      {active === "addRawKey" && <></>}
+     
 
-      {active === "editRawKey" && (
+      {active === "addRawKey" && (
         <Box
           display="grid"
           gridTemplateColumns="repeat(12, 1fr)"
@@ -197,7 +171,7 @@ const RecordingStudents = () => {
         </Box>
       )}
 
-      {active === "deleteRawKey" && <></>}
+      
     </Box>
   );
 };
