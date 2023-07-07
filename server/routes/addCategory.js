@@ -1,7 +1,7 @@
 import express from "express";
 import {
   createAddCategory,
-  getAddCategories,
+  getAddCategoriesByCourse, // Update the import
   getAddCategoryById,
   updateAddCategory,
   deleteAddCategory
@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 router.post("/", createAddCategory);
-router.get("/", getAddCategories);
+router.get("/course/:courseId", getAddCategoriesByCourse); // Update the route
 router.get("/:id", getAddCategoryById);
 router.put("/:id", updateAddCategory);
 router.delete("/:id", deleteAddCategory);

@@ -84,3 +84,16 @@ export const deleteAddCategory = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+// Get AddCategories by Course
+export const getAddCategoriesByCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+
+    const categories = await AddCategory.find({ addCourse: courseId }).populate("addCourse");
+
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};

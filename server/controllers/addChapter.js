@@ -1,4 +1,4 @@
-import AddChapter from "../models/Addchapter.js";
+import AddChapter from "../models/AddChapter.js";
 import AddCourse from "../models/AddCourse.js";
 
 // Create AddChapter
@@ -39,6 +39,7 @@ export const getAddChapterById = async (req, res) => {
   try {
     const { id } = req.params;
     const chapter = await AddChapter.findById(id).populate("addCourse");
+    console.log(chapter,id)
     if (!chapter) {
       return res.status(404).json({ message: "AddChapter not found" });
     }
@@ -87,5 +88,16 @@ export const deleteAddChapter = async (req, res) => {
     res.status(200).json({ message: "AddChapter deleted successfully" });
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+// Get AddChapters By Course Id
+export const getChaptersByCourseId = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const chapters = await AddChapter.find({ addCourse: courseId }).populate("addCourse");
+    res.status(200).json(chapters);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

@@ -5,7 +5,7 @@ import axios from "axios";
 import Grid from "@mui/material/Grid";
 import { Add } from "@mui/icons-material";
 import { Box, Button, TextField, useTheme, Select, MenuItem } from "@mui/material";
-
+import { FormControl, InputLabel} from "@mui/material";
 const AddCategory = () => {
   const [newCategoryData, setNewCategoryData] = useState({
     addCourseId: "",
@@ -84,23 +84,26 @@ const AddCategory = () => {
       {/* Add Category */}
       <Box my="20px" sx={{ width: "100%" }}>
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-          <Grid item container direction="row" alignItems="center" justifyContent="center" xs={6}>
-            <Select
-              name="addCourseId"
-              value={newCategoryData.addCourseId}
-              onChange={handleNewCategoryInputChange}
-              label="Select Course"
-              variant="outlined"
-              fullWidth
-            >
-              <MenuItem value="">Select Course</MenuItem>
-              {courseList.map((course) => (
-                <MenuItem key={course._id} value={course._id}>
-                  {course.addcourse}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
+        <Grid item container direction="row" alignItems="center" justifyContent="center" xs={6}>
+  <FormControl fullWidth variant="outlined">
+    <InputLabel id="course-label">Select Course</InputLabel>
+    <Select
+      labelId="course-label"
+      id="course"
+      name="addCourseId"
+      value={newCategoryData.addCourseId}
+      onChange={handleNewCategoryInputChange}
+      label="Select Course"
+    >
+      
+      {courseList.map((course) => (
+        <MenuItem key={course._id} value={course._id}>
+          {course.addcourse}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</Grid>
 
           <Grid item container direction="row" alignItems="center" justifyContent="center" xs={6}>
             <TextField
@@ -115,24 +118,26 @@ const AddCategory = () => {
           </Grid>
 
           <Grid item container direction="row" alignItems="center" justifyContent="center" xs={6}>
-            <Select
-              name="filetypes"
-              value={newCategoryData.filetypes}
-              onChange={handleNewCategoryInputChange}
-              label="Select File Type"
-              variant="outlined"
-              fullWidth
-            >
-              <MenuItem value="">Select File Type</MenuItem>
-              <MenuItem value="PDF Document">PDF Document</MenuItem>
-              <MenuItem value="MS Word Document">MS Word Document</MenuItem>
-              <MenuItem value="MS Excel Document">MS Excel Document</MenuItem>
-              <MenuItem value="Image">Image</MenuItem>
-              <MenuItem value="Video">Video</MenuItem>
-              <MenuItem value="Audio">Audio</MenuItem>
-            </Select>
-          </Grid>
-
+  <FormControl fullWidth variant="outlined">
+    <InputLabel id="filetype-label">Select File Type</InputLabel>
+    <Select
+      labelId="filetype-label"
+      id="filetype"
+      name="filetypes"
+      value={newCategoryData.filetypes}
+      onChange={handleNewCategoryInputChange}
+      label="Select File Type"
+    >
+      
+      <MenuItem value="PDF Document">PDF Document</MenuItem>
+      <MenuItem value="MS Word Document">MS Word Document</MenuItem>
+      <MenuItem value="MS Excel Document">MS Excel Document</MenuItem>
+      <MenuItem value="Image">Image</MenuItem>
+      <MenuItem value="Video">Video</MenuItem>
+      <MenuItem value="Audio">Audio</MenuItem>
+    </Select>
+  </FormControl>
+</Grid>
           <Grid item container direction="row" alignItems="center" justifyContent="center" xs={6}>
             <TextField
               type="text"

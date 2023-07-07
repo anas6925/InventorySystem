@@ -18,7 +18,7 @@ import authRoutes  from './routes/authRoutes.js';
 import addCourseRoutes from './routes/addCourse.js'
 import addChapters from './routes/addChapter.js'
 import addCategory from "./routes/addCategory.js";
-import AddResource from "./routes/addResource.js";
+import addResource from "./routes/addResource.js";
 
 
 /* CONFIGURATION */
@@ -46,7 +46,7 @@ app.use("/api/rawitems", rawItemsRoutes);
 app.use("/api/addCourse", addCourseRoutes);
 app.use("/api/addChapter", addChapters);
 app.use("/api/addCategory", addCategory);
-app.use("/api/addResource", AddResource);
+app.use("/api/addResource", addResource);
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;

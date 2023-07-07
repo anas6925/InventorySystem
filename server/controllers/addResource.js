@@ -1,15 +1,15 @@
 import AddResource from "../models/AddResource.js";
 import AddCourse from "../models/AddCourse.js";
-import AddChapter from "../models/Addchapter.js";
+import AddChapter from "../models/AddChapter.js";
+import AddCategory from "../models/AddCategory.js";
 
 // Create AddResource
 export const createAddResource = async (req, res) => {
   try {
-    const { addCourseId, addChapterId, resourcecategory, resourcetitle, supportedfiletype, videothumbnail } = req.body;
+    const { addCourseId, addChapterId, resourceCategoryId, resourcetitle, supportedfiletype, videothumbnail } = req.body;
 
     // Check if the referenced AddCourse exists
     const existingCourse = await AddCourse.findById(addCourseId);
- 
     if (!existingCourse) {
       return res.status(404).json({ message: "AddCourse not found" });
     }
@@ -20,10 +20,16 @@ export const createAddResource = async (req, res) => {
       return res.status(404).json({ message: "AddChapter not found" });
     }
 
+    // Check if the referenced AddCategory exists
+    const existingCategory = await AddCategory.findById(resourceCategoryId);
+    if (!existingCategory) {
+      return res.status(404).json({ message: "AddCategory not found" });
+    }
+
     const newResource = new AddResource({
-        addCourse:addCourseId,
-        addChapter:addChapterId,
-      resourcecategory,
+      addCourse: addCourseId,
+      addChapter: addChapterId,
+      resourcecategorytitle: resourceCategoryId,
       resourcetitle,
       supportedfiletype,
       videothumbnail,
@@ -40,8 +46,9 @@ export const createAddResource = async (req, res) => {
 export const getAddResources = async (req, res) => {
   try {
     const resources = await AddResource.find()
-      .populate("addCourseId")
-      .populate("addChapterId");
+      .populate("addCourse")
+      .populate("addChapter")
+      .populate("resourcecategorytitle");
     res.status(200).json(resources);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -49,13 +56,13 @@ export const getAddResources = async (req, res) => {
 };
 
 // Get AddResource By Id
-
 export const getAddResourceById = async (req, res) => {
   try {
     const { id } = req.params;
     const resource = await AddResource.findById(id)
-      .populate("addCourseId")
-      .populate("addChapterId");
+      .populate("addCourse")
+      .populate("addChapter")
+      .populate("addCategory");
     if (!resource) {
       return res.status(404).json({ message: "AddResource not found" });
     }
@@ -69,7 +76,7 @@ export const getAddResourceById = async (req, res) => {
 export const updateAddResource = async (req, res) => {
   try {
     const { id } = req.params;
-    const { addCourseId, addChapterId, resourcecategory, resourcetitle, supportedfiletype, videothumbnail } = req.body;
+    const { addCourseId, addChapterId, resourceCategoryId, resourcetitle, supportedfiletype, videothumbnail } = req.body;
 
     // Check if the referenced AddCourse exists
     const existingCourse = await AddCourse.findById(addCourseId);
@@ -83,13 +90,18 @@ export const updateAddResource = async (req, res) => {
       return res.status(404).json({ message: "AddChapter not found" });
     }
 
+    // Check if the referenced AddCategory exists
+    const existingCategory = await AddCategory.findById(resourceCategoryId);
+    if (!existingCategory) {
+      return res.status(404).json({ message: "AddCategory not found" });
+    }
+
     const updatedResource = await AddResource.findByIdAndUpdate(
       id,
       {
-        addCourse:addCourseId,
-        addChapter:addChapterId,
-      resourcecategory,
-        resourcecategory,
+        addCourse: addCourseId,
+        addChapter: addChapterId,
+        addCategory: resourceCategoryId,
         resourcetitle,
         supportedfiletype,
         videothumbnail,

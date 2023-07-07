@@ -4,7 +4,15 @@ import Header from "components/Header";
 import axios from "axios";
 import Grid from "@mui/material/Grid";
 import { Add } from "@mui/icons-material";
-import { Box, Button, TextField, useTheme, Select, MenuItem } from "@mui/material";
+import { FormControl, InputLabel} from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  useTheme,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 
 const AddChapter = () => {
@@ -39,10 +47,15 @@ const AddChapter = () => {
 
   const handleNewChapterSave = async () => {
     try {
-      const response = await axios.post("http://localhost:5001/api/addChapter", newChapterData);
+      const response = await axios.post(
+        "http://localhost:5001/api/addChapter",
+        newChapterData
+      );
       if (response.status === 201) {
         const createdChapter = response.data;
-        console.log(`Successfully created AddChapter with ID: ${createdChapter._id}`);
+        console.log(
+          `Successfully created AddChapter with ID: ${createdChapter._id}`
+        );
         setNewChapterData({ addchapter: "", addCourseId: "" }); // Reset the input fields
         // You can handle the created chapter as needed
       } else {
@@ -78,30 +91,26 @@ const AddChapter = () => {
       {/* Add Chapter */}
       <Box my="20px" sx={{ width: "100%" }}>
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-          <Grid
-            item
-            container
-            direction="row"
-            alignItems="center"
-            justifyContent="center"
-            xs={6}
-          >
-            <Select
-              name="addCourseId"
-              value={newChapterData.addCourseId}
-              onChange={handleNewChapterInputChange}
-              label="Select Course"
-              variant="outlined"
-              fullWidth
-            >
-              <MenuItem value="">Select Course</MenuItem>
-              {courseList.map((course) => (
-                <MenuItem key={course._id} value={course._id}>
-                  {course.addcourse}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
+        <Grid item container direction="row" alignItems="center" justifyContent="center" xs={6}>
+  <FormControl fullWidth variant="outlined">
+    <InputLabel id="course-label">Select Course</InputLabel>
+    <Select
+      labelId="course-label"
+      id="course"
+      name="addCourseId"
+      value={newChapterData.addCourseId}
+      onChange={handleNewChapterInputChange}
+      label="Select Course"
+    >
+    
+      {courseList.map((course) => (
+        <MenuItem key={course._id} value={course._id}>
+          {course.addcourse}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</Grid>
 
           <Grid
             item
