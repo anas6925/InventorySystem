@@ -1,4 +1,5 @@
-import Student from "../models/student.js";
+import Student from "../models/Student.js";
+
 import mongoose from 'mongoose';
 
 // Create Student
